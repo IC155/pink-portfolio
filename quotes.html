@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pink Quote Generator</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      background: #fdf0f5;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .card {
+      background: #fbeaf0;
+      border: 1px solid #f4c0d1;
+      border-radius: 24px;
+      padding: 48px 40px 36px;
+      max-width: 520px;
+      width: 100%;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+    }
+    .quote-mark {
+      font-size: 64px;
+      color: #f4c0d1;
+      line-height: 0.6;
+      font-family: Georgia, serif;
+    }
+    #quote {
+      font-size: 20px;
+      color: #4b1528;
+      line-height: 1.7;
+      min-height: 80px;
+      transition: opacity 0.3s;
+      font-style: italic;
+    }
+    #author {
+      font-size: 14px;
+      color: #993556;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      min-height: 20px;
+    }
+    .divider { width: 40px; height: 2px; background: #f4c0d1; border-radius: 1px; }
+    .btn {
+      background: #d4537e;
+      color: #fbeaf0;
+      border: none;
+      border-radius: 12px;
+      padding: 14px 36px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: inherit;
+      transition: filter 0.1s, transform 0.08s;
+    }
+    .btn:hover { filter: brightness(0.9); }
+    .btn:active { transform: scale(0.96); }
+    .copy-btn {
+      background: transparent;
+      color: #d4537e;
+      border: 1px solid #d4537e;
+      border-radius: 12px;
+      padding: 10px 22px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.1s;
+    }
+    .copy-btn:hover { background: #fbeaf0; }
+    .btn-row { display: flex; gap: 10px; align-items: center; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="quote-mark">&ldquo;</div>
+    <p id="quote">You are enough, just as you are.</p>
+    <p id="author">&mdash; Meghan Markle</p>
+    <div class="divider"></div>
+    <div class="btn-row">
+      <button class="btn" onclick="newQuote()">New quote</button>
+      <button class="copy-btn" onclick="copyQuote()">Copy</button>
+    </div>
+  </div>
+  <script>
+    const quotes = [
+      { text: "You are enough, just as you are.", author: "Meghan Markle" },
+      { text: "She believed she could, so she did.", author: "R.S. Grey" },
+      { text: "Be yourself — everyone else is already taken.", author: "Oscar Wilde" },
+      { text: "In the middle of difficulty lies opportunity.", author: "Albert Einstein" },
+      { text: "The secret of getting ahead is getting started.", author: "Mark Twain" },
+      { text: "Do one thing every day that scares you.", author: "Eleanor Roosevelt" },
+      { text: "It always seems impossible until it's done.", author: "Nelson Mandela" },
+      { text: "You miss 100% of the shots you don't take.", author: "Wayne Gretzky" },
+      { text: "The best time to plant a tree was 20 years ago. The second best time is now.", author: "Chinese Proverb" },
+      { text: "Act as if what you do makes a difference. It does.", author: "William James" },
+      { text: "Happiness is not something ready-made. It comes from your own actions.", author: "Dalai Lama" },
+      { text: "You only live once, but if you do it right, once is enough.", author: "Mae West" },
+      { text: "Dream big and dare to fail.", author: "Norman Vaughan" },
+      { text: "Everything you've ever wanted is on the other side of fear.", author: "George Addair" },
+      { text: "Success is not final, failure is not fatal: it is the courage to continue that counts.", author: "Winston Churchill" },
+    ];
+
+    let last = 0;
+
+    function newQuote() {
+      const el = document.getElementById('quote');
+      el.style.opacity = 0;
+      setTimeout(() => {
+        let idx;
+        do { idx = Math.floor(Math.random() * quotes.length); } while (idx === last);
+        last = idx;
+        el.textContent = quotes[idx].text;
+        document.getElementById('author').textContent = '\u2014 ' + quotes[idx].author;
+        el.style.opacity = 1;
+      }, 280);
+    }
+
+    function copyQuote() {
+      const q = document.getElementById('quote').textContent;
+      const a = document.getElementById('author').textContent;
+      navigator.clipboard.writeText(q + ' ' + a).catch(() => {});
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pink To-Do List</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      background: #fdf0f5;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 48px 16px;
+    }
+    .app { width: 100%; max-width: 480px; }
+    h1 { font-size: 28px; font-weight: 500; color: #4b1528; margin-bottom: 24px; text-align: center; }
+    .input-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    input[type="text"] {
+      flex: 1;
+      padding: 12px 16px;
+      border: 1px solid #f4c0d1;
+      border-radius: 12px;
+      background: #fbeaf0;
+      font-size: 15px;
+      color: #4b1528;
+      outline: none;
+      font-family: inherit;
+    }
+    input[type="text"]::placeholder { color: #ed93b1; }
+    input[type="text"]:focus { border-color: #d4537e; }
+    .add-btn {
+      background: #d4537e;
+      color: #fbeaf0;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 22px;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: inherit;
+      transition: filter 0.1s;
+      white-space: nowrap;
+    }
+    .add-btn:hover { filter: brightness(0.9); }
+    .filters {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      justify-content: center;
+    }
+    .filter-btn {
+      background: #fbeaf0;
+      color: #993556;
+      border: 1px solid #f4c0d1;
+      border-radius: 20px;
+      padding: 6px 16px;
+      font-size: 13px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.1s;
+    }
+    .filter-btn.active { background: #d4537e; color: #fbeaf0; border-color: #d4537e; }
+    ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    li {
+      background: #fbeaf0;
+      border: 1px solid #f4c0d1;
+      border-radius: 12px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: opacity 0.2s;
+    }
+    li.done { opacity: 0.5; }
+    li.done .task-text { text-decoration: line-through; }
+    .check {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      border: 2px solid #d4537e;
+      background: transparent;
+      cursor: pointer;
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.1s;
+      font-size: 13px;
+      color: #fbeaf0;
+    }
+    .check.checked { background: #d4537e; }
+    .task-text { flex: 1; font-size: 15px; color: #4b1528; }
+    .del-btn {
+      background: none;
+      border: none;
+      color: #ed93b1;
+      cursor: pointer;
+      font-size: 18px;
+      line-height: 1;
+      padding: 2px 4px;
+      transition: color 0.1s;
+    }
+    .del-btn:hover { color: #d4537e; }
+    .empty { text-align: center; color: #ed93b1; font-size: 15px; padding: 32px 0; }
+    .count { text-align: center; font-size: 13px; color: #993556; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <h1>To-Do List</h1>
+    <div class="input-row">
+      <input type="text" id="task-input" placeholder="Add a new task..." onkeydown="if(event.key==='Enter')addTask()" />
+      <button class="add-btn" onclick="addTask()">Add</button>
+    </div>
+    <div class="filters">
+      <button class="filter-btn active" onclick="setFilter('all', this)">All</button>
+      <button class="filter-btn" onclick="setFilter('active', this)">Active</button>
+      <button class="filter-btn" onclick="setFilter('done', this)">Done</button>
+    </div>
+    <ul id="list"></ul>
+    <p class="empty" id="empty" style="display:none">No tasks here yet!</p>
+    <p class="count" id="count"></p>
+  </div>
+  <script>
+    let tasks = [], filter = 'all';
+
+    function addTask() {
+      const input = document.getElementById('task-input');
+      const text = input.value.trim();
+      if (!text) return;
+      tasks.push({ id: Date.now(), text, done: false });
+      input.value = '';
+      render();
+    }
+
+    function toggle(id) {
+      tasks = tasks.map(t => t.id === id ? {...t, done: !t.done} : t);
+      render();
+    }
+
+    function remove(id) {
+      tasks = tasks.filter(t => t.id !== id);
+      render();
+    }
+
+    function setFilter(f, btn) {
+      filter = f;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      render();
+    }
+
+    function render() {
+      const list = document.getElementById('list');
+      const empty = document.getElementById('empty');
+      const count = document.getElementById('count');
+      const visible = tasks.filter(t =>
+        filter === 'all' ? true : filter === 'done' ? t.done : !t.done
+      );
+      list.innerHTML = '';
+      visible.forEach(t => {
+        const li = document.createElement('li');
+        if (t.done) li.classList.add('done');
+        li.innerHTML = `
+          <div class="check ${t.done ? 'checked' : ''}" onclick="toggle(${t.id})">${t.done ? '&#10003;' : ''}</div>
+          <span class="task-text">${t.text}</span>
+          <button class="del-btn" onclick="remove(${t.id})">&#10005;</button>
+        `;
+        list.appendChild(li);
+      });
+      empty.style.display = visible.length === 0 ? 'block' : 'none';
+      const done = tasks.filter(t => t.done).length;
+      count.textContent = tasks.length ? `${done} of ${tasks.length} completed` : '';
+    }
+
+    render();
+  </script>
+</body>
+</html>
